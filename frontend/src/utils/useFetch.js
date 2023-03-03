@@ -5,7 +5,7 @@ import AuthContext from '../context/AuthContext';
 
 
 let useFetch = () => {
-    let config = {}
+    
 
     let {authTokens, setAuthTokens, setUser} = useContext(AuthContext)
 
@@ -29,13 +29,13 @@ let useFetch = () => {
             body:JSON.stringify({'refresh':authTokens.refresh})
         })
         let data = await response.json()
-        localStorage.setItem('authTokens', JSON.stringify(data))
-        setAuthTokens(data)
+        localStorage.setItem('authTokens', JSON.stringify({...authTokens,access:data.access}))
+        setAuthTokens({...authTokens,access:data.access})
         setUser(jwt_decode(data.access))
         return data
     }
 
-    let callFetch = async (url) => {
+    let callFetch = async (url,config) => {
         const user = jwt_decode(authTokens.access)
         const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
 
